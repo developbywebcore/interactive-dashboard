@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Delta AI responsive sidebar navigation demo">
+  <title>Delta AI — Sidebar</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <video class="background-video" id="backgroundVideo" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+    <source src="background.mp4" type="video/mp4">
+  </video>
+  <div class="video-vignette" aria-hidden="true"></div>
+  <div class="app-shell">
+    <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open sidebar" aria-expanded="false" aria-controls="sidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+    <aside class="sidebar" id="sidebar" aria-label="Delta AI navigation">
+      <header class="sidebar-header">
+        <button class="brand" id="brandButton" type="button" aria-label="Go to Home">
+          <span class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 256 256" fill="none" focusable="false">
+              <path d="M140.801 230.404H47.675L140.801 137.279V230.404ZM230.404 191.603L185.602 230.404V70.3976H25.5957L63.9973 25.5957H230.404V191.603ZM25.5957 189.124V115.199H99.5204L25.5957 189.124Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="brand-name">delta.ai</span>
+        </button>
+
+        <button class="menu-button" id="menuButton" type="button" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-page="Home" data-description="Welcome to your Delta AI workspace." type="button">
+          <span class="nav-icon" aria-hidden="true">⌂</span>
+          <span>Home</span>
+        </button>
+
+        <div class="nav-group">
+          <button class="nav-item has-submenu" type="button" aria-expanded="false" aria-controls="productsMenu">
+            <span class="nav-icon" aria-hidden="true">▣</span>
+            <span>Products</span>
+            <span class="chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="sub-menu" id="productsMenu">
+            <div class="sub-menu-inner">
+<button data-page="Agents" data-description="Manage and explore your AI agents." type="button"><span class="dot"></span>Agents</button>
+            <button data-page="Analytics" data-description="Review product performance and insights." type="button"><span class="dot"></span>Analytics</button>
+            <button data-page="Dashboards" data-description="Open your saved dashboards and reports." type="button"><span class="dot"></span>Dashboards</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-item has-submenu" type="button" aria-expanded="false" aria-controls="scheduleMenu">
+            <span class="nav-icon" aria-hidden="true">◷</span>
+            <span>Schedule</span>
+            <span class="chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="sub-menu" id="scheduleMenu">
+            <div class="sub-menu-inner">
+<button data-page="Generation" data-description="Create and review scheduled generation jobs." type="button"><span class="dot"></span>Generation</button>
+            <button data-page="Management" data-description="Manage schedules, owners and run settings." type="button"><span class="dot"></span>Management</button>
+            <button data-page="Suspension" data-description="Pause or resume scheduled workflows." type="button"><span class="dot"></span>Suspension</button>
+            <button data-page="Alerts" data-description="Configure notifications for scheduled jobs." type="button"><span class="dot"></span>Alerts</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <button class="nav-item has-submenu" type="button" aria-expanded="false" aria-controls="peopleMenu">
+            <span class="nav-icon" aria-hidden="true">♙</span>
+            <span>People</span>
+            <span class="chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="sub-menu" id="peopleMenu">
+            <div class="sub-menu-inner">
+<button data-page="Users" data-description="View and manage workspace users." type="button"><span class="dot"></span>Users</button>
+            <button data-page="Contacts" data-description="Browse your saved contacts." type="button"><span class="dot"></span>Contacts</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="nav-item" data-page="Notifications" data-description="Review your latest notifications and activity." type="button">
+          <span class="nav-icon" aria-hidden="true">♧</span>
+          <span>Notifications</span>
+        </button>
+
+        <div class="nav-spacer"></div>
+
+        <button class="nav-item" data-page="Account" data-description="Manage your account details and profile." type="button">
+          <span class="nav-icon" aria-hidden="true">♙</span>
+          <span>Account</span>
+        </button>
+
+        <button class="nav-item" data-page="Settings" data-description="Configure your Delta AI preferences." type="button">
+          <span class="nav-icon" aria-hidden="true">⚙</span>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="content" id="mainContent">
+      <section class="content-card" aria-live="polite">
+        <p class="eyebrow">DELTA.AI</p>
+        <h1 id="pageTitle">Home</h1>
+        <p id="pageText">Welcome to your Delta AI workspace.</p>
+        <div class="interaction-hint" id="interactionHint">Choose a section from the sidebar to explore.</div>
+        <div class="content-actions">
+          <button class="demo-button" id="resetButton" type="button">Back to Home</button>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    (() => {
+      const sidebar = document.getElementById("sidebar");
+      const menuButton = document.getElementById("menuButton");
+      const mobileMenuButton = document.getElementById("mobileMenuButton");
+      const brandButton = document.getElementById("brandButton");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      const pageTitle = document.getElementById("pageTitle");
+      const pageText = document.getElementById("pageText");
+      const interactionHint = document.getElementById("interactionHint");
+      const resetButton = document.getElementById("resetButton");
+      const toast = document.getElementById("toast");
+      const navItems = [...document.querySelectorAll("[data-page]")];
+      const groups = [...document.querySelectorAll(".nav-group")];
+      let toastTimer;
+
+      groups.forEach(group => {
+        group.querySelectorAll(".sub-menu button").forEach((button, index) => {
+          button.style.setProperty("--stagger", `${index * 32}ms`);
+        });
+      });
+
+      const isMobile = () => window.matchMedia("(max-width: 700px)").matches;
+
+      function setMobileOpen(open) {
+        sidebar.classList.toggle("mobile-open", open);
+        backdrop.classList.toggle("visible", open);
+        backdrop.setAttribute("aria-hidden", String(!open));
+        mobileMenuButton.setAttribute("aria-expanded", String(open));
+        mobileMenuButton.setAttribute("aria-label", open ? "Close sidebar" : "Open sidebar");
+      }
+
+      function setCollapsed(collapsed) {
+        if (isMobile()) {
+          setMobileOpen(!collapsed);
+          return;
+        }
+        sidebar.classList.toggle("collapsed", collapsed);
+        document.body.classList.toggle("sidebar-is-collapsed", collapsed);
+        menuButton.setAttribute("aria-expanded", String(!collapsed));
+        menuButton.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+        if (collapsed) closeGroups();
+      }
+
+      function closeGroups(except = null) {
+        groups.forEach(group => {
+          if (group !== except) {
+            group.classList.remove("open");
+            const trigger = group.querySelector(".has-submenu");
+            trigger.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+
+      function toggleGroup(group) {
+        const trigger = group.querySelector(".has-submenu");
+        const willOpen = !group.classList.contains("open");
+        if (sidebar.classList.contains("collapsed") && !isMobile()) {
+          setCollapsed(false);
+        }
+        closeGroups(group);
+        group.classList.toggle("open", willOpen);
+        trigger.setAttribute("aria-expanded", String(willOpen));
+        if (willOpen && sidebar.classList.contains("collapsed")) setCollapsed(false);
+      }
+
+      function showToast(message) {
+        clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.classList.add("show");
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+      }
+
+      function selectPage(button) {
+        navItems.forEach(item => item.classList.remove("active"));
+        groups.forEach(group => group.querySelector(".has-submenu").classList.remove("active"));
+        button.classList.add("active");
+
+        const group = button.closest(".nav-group");
+        if (group) {
+          group.querySelector(".has-submenu").classList.add("active");
+          group.classList.add("open");
+          group.querySelector(".has-submenu").setAttribute("aria-expanded", "true");
+        }
+
+        const page = button.dataset.page;
+        pageTitle.textContent = page;
+        pageText.textContent = button.dataset.description || `${page} selected.`;
+        interactionHint.textContent = `You are viewing ${page}. Use the sidebar to switch sections.`;
+        if (isMobile()) setMobileOpen(false);
+        showToast(`${page} selected`);
+      }
+
+      menuButton.addEventListener("click", () => setCollapsed(!sidebar.classList.contains("collapsed")));
+      mobileMenuButton.addEventListener("click", () => setMobileOpen(true));
+      backdrop.addEventListener("click", () => setMobileOpen(false));
+
+      brandButton.addEventListener("click", () => {
+        const home = document.querySelector('[data-page="Home"]');
+        closeGroups();
+        selectPage(home);
+      });
+
+      groups.forEach(group => {
+        const trigger = group.querySelector(".has-submenu");
+        trigger.addEventListener("click", event => {
+          event.preventDefault();
+          toggleGroup(group);
+        });
+      });
+
+      navItems.forEach(button => {
+        button.addEventListener("click", event => {
+          if (button.classList.contains("has-submenu")) return;
+          event.preventDefault();
+          selectPage(button);
+        });
+      });
+
+      resetButton.addEventListener("click", () => {
+        const home = document.querySelector('[data-page="Home"]');
+        closeGroups();
+        selectPage(home);
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+          closeGroups();
+          if (isMobile()) setMobileOpen(false);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (!isMobile()) {
+          setMobileOpen(false);
+          menuButton.setAttribute("aria-expanded", String(!sidebar.classList.contains("collapsed")));
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

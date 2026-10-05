@@ -1,0 +1,345 @@
+* { box-sizing: border-box; }
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+  --line: rgba(255,255,255,.12);
+  --soft: rgba(255,255,255,.065);
+  --glass: rgba(10,18,34,.48);
+  --glow: rgba(91,150,255,.28);
+}
+
+html, .app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+.background-video {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  opacity: .28;
+  filter: saturate(.88) contrast(1.08) brightness(.58);
+  transform: scale(1.035) translateZ(0);
+  will-change: transform;
+}
+
+.video-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(26,57,113,.05), transparent 45%),
+    linear-gradient(180deg, rgba(1,5,14,.16), rgba(1,5,14,.62));
+}
+
+body { margin: 0; min-height: 100%; }
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: rgba(255,255,255,.96);
+  background: #020611;
+  isolation: isolate;
+}
+
+/* Deep-space backdrop: subtle, slow, and intentionally behind the UI. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+}
+body::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(87,132,255,.22), transparent 24%),
+    radial-gradient(circle at 82% 25%, rgba(125,77,255,.18), transparent 23%),
+    radial-gradient(circle at 58% 82%, rgba(0,190,255,.11), transparent 28%),
+    radial-gradient(circle at 45% 45%, rgba(255,255,255,.035) 0 1px, transparent 1.5px),
+    linear-gradient(135deg, #020612 0%, #071226 48%, #02040b 100%);
+  background-size: auto, auto, auto, 46px 46px, auto;
+  animation: spaceDrift 34s ease-in-out infinite alternate;
+}
+body::after {
+  z-index: -1;
+  opacity: .55;
+  background-image:
+    radial-gradient(circle at 12% 35%, rgba(255,255,255,.65) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 74% 12%, rgba(255,255,255,.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 48% 72%, rgba(255,255,255,.45) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 78%, rgba(255,255,255,.4) 0 1px, transparent 1.5px);
+  background-size: 190px 170px, 240px 210px, 210px 190px, 280px 240px;
+  animation: stars 42s linear infinite;
+}
+
+@keyframes spaceDrift { from { transform: translate3d(-1%, -1%, 0) scale(1); } to { transform: translate3d(1%, 1%, 0) scale(1.035); } }
+@keyframes stars { from { transform: translate3d(0,0,0); } to { transform: translate3d(18px,-12px,0); } }
+@keyframes floatIn { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes glowPulse { 0%,100% { box-shadow: inset 0 1px 1px rgba(255,255,255,.28), 0 20px 55px rgba(0,0,0,.34), 0 0 0 rgba(91,150,255,0); } 50% { box-shadow: inset 0 1px 1px rgba(255,255,255,.35), 0 24px 65px rgba(0,0,0,.38), 0 0 30px rgba(91,150,255,.07); } }
+
+button { font: inherit; }
+button:focus-visible { outline: 2px solid rgba(156,201,255,.95); outline-offset: 3px; }
+
+.sidebar-backdrop { display: none; }
+.mobile-menu-button { display: none; }
+
+.sidebar {
+  position: fixed;
+  z-index: 20;
+  top: 24px;
+  left: 24px;
+  bottom: 32px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.035) 45%, rgba(73,119,255,.035)),
+    var(--glass);
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.34),
+    inset 0 -1px 1px rgba(255,255,255,.08),
+    inset 0 0 60px rgba(255,255,255,.035),
+    0 24px 60px rgba(0,0,0,.34),
+    0 0 45px rgba(62,123,255,.035);
+  transform: translate3d(0,0,0);
+  will-change: width, transform, box-shadow;
+  transition: width .38s cubic-bezier(.22,1,.36,1), transform .38s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
+  animation: glowPulse 7s ease-in-out infinite;
+}
+.sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 33px;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,.10), transparent 26%, transparent 70%, rgba(95,150,255,.07));
+  opacity: .8;
+}
+
+.sidebar-header { position: relative; z-index: 1; display: flex; align-items: center; height: 72px; padding: 10px 16px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+.brand { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0; border: 0; color: inherit; background: transparent; cursor: pointer; border-radius: 10px; }
+.brand:hover { opacity: .9; }
+.brand-logo { width: 24px; height: 24px; flex: 0 0 24px; color: #f6f6f6; filter: drop-shadow(0 0 8px rgba(255,255,255,.16)); }
+.brand-logo svg { width: 100%; height: 100%; display: block; }
+.brand-name { margin: 0; font-size: 18px; font-weight: 400; letter-spacing: 1px; white-space: nowrap; }
+
+.menu-button {
+  width: 32px; height: 32px; margin-left: auto; display: grid; place-content: center; gap: 3px;
+  border: 1px solid transparent; background: transparent; color: white; cursor: pointer; border-radius: 10px; flex: 0 0 32px;
+  transition: background .2s ease, transform .2s ease, border-color .2s ease;
+}
+.menu-button:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.09); transform: translate3d(0,-1px,0); box-shadow: 0 8px 20px rgba(0,0,0,.16), 0 0 18px rgba(91,150,255,.06); }
+.menu-button:active { transform: translateY(0) scale(.95); }
+.menu-button span { display: block; width: 15px; height: 1.5px; border-radius: 2px; background: currentColor; transition: transform .25s ease; }
+
+.nav { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; min-height: 0; padding-top: 12px; overflow-y: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-group { position: relative; }
+.nav-item, .sub-menu button {
+  width: 100%; min-height: 50px; display: flex; align-items: center; gap: 16px; padding: 0 16px;
+  border: 1px solid transparent; border-radius: 12px; color: rgba(255,255,255,.95); background: transparent; text-align: left; cursor: pointer;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  will-change: transform;
+  transition: background .22s ease, transform .32s cubic-bezier(.22,1,.36,1), border-color .22s ease, box-shadow .28s ease;
+}
+.nav-item:hover, .sub-menu button:hover { background: linear-gradient(100deg, rgba(255,255,255,.085), rgba(93,147,255,.055)); border-color: rgba(255,255,255,.055); transform: translate3d(3px,-1px,0); }
+.nav-item:active, .sub-menu button:active { transform: translate3d(1px,0,0) scale(.985); }
+.nav-item.active { background: linear-gradient(105deg, rgba(255,255,255,.13), rgba(93,147,255,.075)); border-color: rgba(255,255,255,.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 8px 22px rgba(0,0,0,.12); }
+.nav-item > span:nth-child(2) { flex: 1; }
+.nav-icon { width: 18px; flex: 0 0 18px; display: inline-grid; place-items: center; font-size: 19px; line-height: 1; opacity: .9; filter: drop-shadow(0 0 7px rgba(130,185,255,.12)); }
+.chevron { width: 18px; text-align: center; font-size: 17px; transition: transform .3s cubic-bezier(.22,1,.36,1); }
+.nav-group.open .chevron { transform: rotate(180deg); }
+
+/* Smooth dropdown: content height animates naturally without a hard max-height jump. */
+.sub-menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translate3d(0,-6px,0) scale(.985);
+  transform-origin: top center;
+  transition:
+    grid-template-rows .42s cubic-bezier(.22,1,.36,1),
+    opacity .24s ease,
+    transform .42s cubic-bezier(.22,1,.36,1);
+}
+.sub-menu-inner { min-height: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; transition: padding .42s cubic-bezier(.22,1,.36,1); }
+.nav-group.open .sub-menu { grid-template-rows: 1fr; opacity: 1; transform: translate3d(0,0,0) scale(1); }
+.nav-group.open .sub-menu-inner { padding-top: 3px; padding-bottom: 6px; }
+.sub-menu button {
+  min-height: 42px;
+  padding-left: 48px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translate3d(-7px,-2px,0) scale(.985);
+  transition:
+    background .22s ease,
+    transform .34s cubic-bezier(.22,1,.36,1),
+    border-color .22s ease,
+    box-shadow .22s ease,
+    opacity .24s ease;
+  transition-delay: 0ms;
+}
+.nav-group.open .sub-menu button {
+  opacity: 1;
+  transform: translate3d(0,0,0) scale(1);
+  transition-delay: var(--stagger, 0ms);
+}
+.nav-group.open > .nav-item {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    0 10px 24px rgba(0,0,0,.12),
+    0 0 24px rgba(91,150,255,.045);
+}
+.sub-menu button.active { background: rgba(255,255,255,.085); border-color: rgba(255,255,255,.055); }
+.sub-menu button.active .dot { background: #dcecff; box-shadow: 0 0 0 3px rgba(116,174,255,.11), 0 0 12px rgba(116,174,255,.35); }
+.dot { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: rgba(255,255,255,.35); transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
+.sub-menu button:hover .dot { transform: scale(1.3); background: rgba(190,220,255,.8); }
+.nav-spacer { flex: 1; min-height: 12px; }
+
+.sidebar.collapsed { width: 78px; }
+.sidebar.collapsed .sidebar-header { padding-left: 10px; padding-right: 10px; }
+.sidebar.collapsed .brand-name, .sidebar.collapsed .nav-item > span:nth-child(2), .sidebar.collapsed .chevron { display: none; }
+.sidebar.collapsed .nav-item { justify-content: center; gap: 0; padding-left: 0; padding-right: 0; }
+.sidebar.collapsed .nav-icon { margin: 0; }
+.sidebar.collapsed .sub-menu { display: none; }
+.sidebar.collapsed .brand { width: 24px; }
+.sidebar.collapsed .menu-button { margin-left: auto; }
+
+.content { min-height: 100vh; margin-left: 308px; display: grid; place-items: center; padding: 40px; transition: margin-left .38s cubic-bezier(.22,1,.36,1); }
+body.sidebar-is-collapsed .content { margin-left: 126px; }
+.content-card {
+  position: relative; overflow: hidden; width: min(680px, 100%); padding: 42px; border: 1px solid rgba(255,255,255,.11); border-radius: 28px;
+  background: linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.028)); backdrop-filter: blur(22px) saturate(130%); -webkit-backdrop-filter: blur(22px) saturate(130%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 25px 70px rgba(0,0,0,.28), 0 0 70px rgba(65,120,255,.035);
+  animation: floatIn .55s cubic-bezier(.22,1,.36,1);
+}
+.content-card::before { content: ""; position: absolute; width: 260px; height: 260px; right: -150px; top: -170px; border-radius: 50%; background: rgba(94,154,255,.10); filter: blur(18px); pointer-events: none; }
+.eyebrow { margin: 0 0 10px; font-size: 12px; letter-spacing: 3px; opacity: .55; }
+.content-card h1 { margin: 0 0 10px; font-size: clamp(32px,5vw,52px); font-weight: 500; letter-spacing: -.02em; }
+.content-card p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.60); line-height: 1.7; }
+.interaction-hint { margin-top: 16px; color: rgba(196,218,255,.58); font-size: 13px; line-height: 1.6; }
+.content-actions { margin-top: 26px; }
+.demo-button { border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 11px 16px; color: #fff; background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(76,126,255,.07)); cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 24px rgba(0,0,0,.12); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; }
+.demo-button:hover { background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(76,126,255,.11)); transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 14px 28px rgba(0,0,0,.2); }
+.demo-button:active { transform: translateY(0) scale(.98); }
+
+.toast { position: fixed; z-index: 50; left: 50%; bottom: 28px; transform: translate(-50%, 12px); padding: 10px 15px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: rgba(8,14,28,.82); color: rgba(255,255,255,.92); box-shadow: 0 14px 35px rgba(0,0,0,.28); backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 700px) {
+  .mobile-menu-button {
+    position: fixed; z-index: 25; top: 16px; left: 16px; width: 44px; height: 44px; display: grid; place-content: center; gap: 4px;
+    border: 1px solid rgba(255,255,255,.12); border-radius: 13px; color: #fff; background: rgba(8,15,30,.62); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.26); cursor: pointer; transition: opacity .2s ease, transform .2s ease, background .2s ease;
+  }
+  .mobile-menu-button:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
+  .mobile-menu-button span { display: block; width: 16px; height: 1.5px; border-radius: 2px; background: currentColor; }
+  body:has(.sidebar.mobile-open) .mobile-menu-button { opacity: 0; pointer-events: none; }
+  .sidebar { top: 12px; left: 12px; bottom: 12px; width: min(280px, calc(100vw - 24px)); transform: translateX(calc(-100% - 24px)); }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .sidebar-backdrop { position: fixed; inset: 0; z-index: 15; display: block; background: rgba(0,0,0,.48); backdrop-filter: blur(5px); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .sidebar-backdrop.visible { opacity: 1; pointer-events: auto; }
+  .content, body.sidebar-is-collapsed .content { margin-left: 0; padding: 95px 20px 20px; }
+  .content-card { padding: 28px; }
+}
+
+@media (min-width: 701px) and (max-width: 980px) { .content { padding-right: 28px; } }
+@media (max-width: 420px) { .sidebar { width: calc(100vw - 24px); } .content-card { border-radius: 22px; } .toast { width: max-content; max-width: calc(100vw - 32px); } }
+@media (prefers-reduced-motion: reduce) { .background-video { animation: none !important; } *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+
+/* ========================================
+   MOBILE DRAWER FIX
+   Uses the exact .mobile-open class from index.html.
+   Keeps the original UI/design unchanged.
+======================================== */
+@media (max-width: 700px) {
+  .sidebar {
+    position: fixed !important;
+    top: 12px !important;
+    left: 12px !important;
+    bottom: 12px !important;
+    width: min(280px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    height: auto !important;
+    z-index: 10000 !important;
+    transform: translateX(calc(-100% - 24px)) !important;
+    transition:
+      transform .5s cubic-bezier(.16,1,.3,1),
+      box-shadow .4s ease !important;
+    overflow: hidden !important;
+  }
+
+  /* The JavaScript opens the drawer with .mobile-open. */
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+    box-shadow:
+      20px 0 60px rgba(0,0,0,.45),
+      0 0 80px rgba(70,120,255,.12) !important;
+  }
+
+  /* Desktop collapsed state must never shrink the mobile drawer. */
+  .sidebar.collapsed {
+    width: min(280px, calc(100vw - 24px)) !important;
+  }
+
+  .sidebar-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    display: block !important;
+    background: rgba(0,0,0,.48) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease, visibility .25s ease !important;
+  }
+
+  .sidebar-backdrop.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* Sidebar content/logo stays above its glass pseudo-layer. */
+  .sidebar-header,
+  .sidebar .nav {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Floating hamburger stays above the page, but disappears while drawer is open. */
+  .mobile-menu-button {
+    z-index: 10001 !important;
+  }
+
+  body:has(.sidebar.mobile-open) .mobile-menu-button {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .content,
+  body.sidebar-is-collapsed .content {
+    position: relative;
+    z-index: 1 !important;
+    margin-left: 0;
+    padding: 95px 20px 20px;
+  }
+}
