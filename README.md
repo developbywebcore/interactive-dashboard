@@ -1,4 +1,4 @@
-# Delta AI — Interactive Dashboard Sidebar
+# interactive dashboard — Interactive Dashboard Sidebar
 
 A polished, GitHub Pages-ready dashboard sidebar with responsive mobile drawer behavior, smooth dropdowns, glass/3D depth, and a user-provided looping video background.
 
